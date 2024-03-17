@@ -6,6 +6,10 @@ pascals triangle
 
 
 def pascal_triangle(n):
+    """
+    returns a list of lists of ints representing pascals triangle
+    """
+
     if n <= 0:
         return []
 

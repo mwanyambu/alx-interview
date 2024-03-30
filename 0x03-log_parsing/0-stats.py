@@ -12,9 +12,10 @@ def compute_stats(log: dict) -> None:
         if log["code_frequency"][code]:
             print("{}: {}".format(code, log["code_frequency"][code]))
 
+
 if __name__ == "__main__":
     regexp = re.compile(
-            r'\d{1,3}\.\d{1,3}\.\d{1,3} - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] "GET /projects/260 HTTP/1.1"(.{3}) (\d+)')
+            r'\d{1,3}\.\d{1,3}\.\d{1,3} - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] "GET /projects/260 HTTP/1.1"(.{3}) (\d+)')  # nopep8
     count = 0
     log = {}
     log["file_size"] = 0

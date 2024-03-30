@@ -34,7 +34,6 @@ if __name__ == "__main__":
                 if (code.isdecimal()):
                     log["code_frequency"][code] += 1
                 if (count % 10 == 0):
-                    output(log)
+                    compute_stats(log)
     finally:
-        output(log)
-
+        compute_stats(log)

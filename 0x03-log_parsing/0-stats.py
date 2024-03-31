@@ -5,36 +5,37 @@ import sys
 import re
 
 
-def compute_stats(log: dict) -> None:
-    """ displays stats """
-    print("File size: {}".format(log["file_size"]))
-    for code in sorted(log["code_frequency"]):
-        if log["code_frequency"][code]:
-            print("{}: {}".format(code, log["code_frequency"][code]))
-
-
 if __name__ == "__main__":
-    regexp = re.compile(
-            r'\d{1,3}\.\d{1,3}\.\d{1,3} - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] "GET /projects/260 HTTP/1.1"(.{3}) (\d+)')  # nopep8
+
+    sizef = 0
     count = 0
-    log = {}
-    log["file_size"] = 0
-    log["code_frequency"] = {
-            str(code): 0 for code in [
-                200, 301, 200, 401, 403, 404, 405, 500]}
+    http_codes = ["200", "301", "400", "403", "404", "405", "500"]
+    log_stats = {k: 0 for k in http_codes}
+
+    def display_stats(log_stats: dict, sizef: int) -> None:
+        print("File size: {:d}".format(sizef))
+        for key, value in sorted(log_stats.items()):
+            if value:
+                print("{}: {}".format(key, value))
 
     try:
         for line in sys.stdin:
-            line = line.strip()
-            match = regexp.fullmatch(line)
-            if(match):
-                count += 1
-                code = match.group(1)
-                file_size = int(match.group(2))
-                log["file_size"] += file_size
-                if (code.isdecimal()):
-                    log["code_frequency"][code] += 1
-                if (count % 10 == 0):
-                    compute_stats(log)
-    finally:
-        compute_stats(log)
+            count += 1
+            data = line.split()
+            try:
+                status_code = data[-2]
+                if status_code in log_stats:
+                    log_stats[status_code] += 1
+            except BaseException:
+                pass
+            try:
+                sizef += int(data[-1])
+            except BaseException:
+                pass
+
+            if count % 10 == 0:
+                display_stats(log_stats, sizef)
+        display_stats(log_stats, sizef)
+    except KeyboardInterrupt:
+        display_stats(log_stats, sizef)
+        raise

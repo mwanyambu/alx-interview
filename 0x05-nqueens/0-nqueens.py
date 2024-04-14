@@ -2,16 +2,19 @@
 """ nqueens """
 import sys
 
-solution = []
+solutions = []
 n = 0
-ind = None
+pos = None
 
 
-def input_validation():
-    """ valudate user input"""
+def get_input():
+    """Retrieves and validates this program's argument.
+
+    Returns:
+        int: The size of the chessboard.
+    """
     global n
     n = 0
-
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
@@ -21,64 +24,82 @@ def input_validation():
         print("N must be a number")
         sys.exit(1)
     if n < 4:
-        print(" must be atlearst 4")
+        print("N must be at least 4")
         sys.exit(1)
     return n
 
 
-def check_position(row, col):
-    """ check position of queen"""
-    if (row[0] == col[0] or (row[1] == col[1])):
+def is_attacking(pos0, pos1):
+    """Checks if the positions of two queens are in an attacking mode.
+
+    Args:
+        pos0 (list or tuple): The first queen's position.
+        pos1 (list or tuple): The second queen's position.
+
+    Returns:
+        bool: True if the queens are in an attacking position else False.
+    """
+    if (pos0[0] == pos1[0]) or (pos0[1] == pos1[1]):
         return True
-    return abs(row[0] - col[0]) == abs(row[1] - col[1])
+    return abs(pos0[0] - pos1[0]) == abs(pos0[1] - pos1[1])
 
 
-def check_group(group):
-    """ check if group exists in solution"""
-    global solution
-    for s in solution:
-        x = 0
-        for t in s:
-            for g in group:
-                if t[0] == g[0] and t[1] == g[1]:
-                    x += 1
-        if x == n:
+def group_exists(group):
+    """Checks if a group exists in the list of solutions.
+
+    Args:
+        group (list of integers): A group of possible positions.
+
+    Returns:
+        bool: True if it exists, otherwise False.
+    """
+    global solutions
+    for stn in solutions:
+        i = 0
+        for stn_pos in stn:
+            for grp_pos in group:
+                if stn_pos[0] == grp_pos[0] and stn_pos[1] == grp_pos[1]:
+                    i += 1
+        if i == n:
             return True
     return False
 
 
-def get_solution(row, group):
-    """ get solution for nqueens"""
-    global solution
-    global n
+def build_solution(row, group):
+    """Builds a solution for the n queens problem.
 
+    Args:
+        row (int): The current row in the chessboard.
+        group (list of lists of integers): The group of valid positions.
+    """
+    global solutions
+    global n
     if row == n:
-        tmp = group.copy()
-        if not check_group(tmp):
-            solution.append(tmp)
+        tmp0 = group.copy()
+        if not group_exists(tmp0):
+            solutions.append(tmp0)
     else:
         for col in range(n):
             a = (row * n) + col
-            matches = zip(list([ind[a]]) * len(group), group)
-            pos = map(lambda x: check_position(x[0], x[1]), matches)
-            group.append(ind[a].copy())
-            if not any(pos):
-                get_solution(row + 1, group)
+            matches = zip(list([pos[a]]) * len(group), group)
+            used_positions = map(lambda x: is_attacking(x[0], x[1]), matches)
+            group.append(pos[a].copy())
+            if not any(used_positions):
+                build_solution(row + 1, group)
             group.pop(len(group) - 1)
 
 
-def print_solution():
-    """ print soluntion """
-    global solution
-    global n
-
+def get_solutions():
+    """Gets the solutions for the given chessboard size.
+    """
+    global pos, n
     pos = list(map(lambda x: [x // n, x % n], range(n ** 2)))
-    j = 0
+    a = 0
     group = []
-    get_solution(0, group)
+    build_solution(a, group)
 
 
-n = input_validation()
-print_solution()
-for s in solution:
-    print(s)
+n = get_input()
+get_solutions()
+for solution in solutions:
+    print(solution)

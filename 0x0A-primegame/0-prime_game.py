@@ -13,19 +13,17 @@ def isWinner(x, nums):
     maria = 0
     ben = 0
 
-    y = [1 for x in range(sorted(nums)[-1] + 1)]
-    y[0], y[1] = 0, 0
-    for i in range(2, len(y)):
-        if y[i] == 1:
-            for j in range(i * i, len(y), i):
-                y[j] = 0
-    for i in nums:
-        if sum(y[:i + 1]) % 2 == 0:
-            ben += 1
-        else:
-            maria += 1
-    if ben > maria:
-        return "Ben"
-    if maria > ben:
-        return "Maria"
-return None
+   primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
+            continue
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        ben += primes_count % 2 == 0
+        maria += primes_count % 2 == 1
+    if maria == ben:
+        return None
+    return 'Maria' if maria > ben else 'Ben'

@@ -5,27 +5,27 @@
 
 def isWinner(x, nums):
     """ prime game """
-    if not nums or x < 1:
+    if x <= 0 or nums is None:
         return None
-    n = max(nums)
-    primes = [True for i in range(max(n + 1, 2))]
-    p = 2
-    while p * p <= n:
-        if primes[p]:
-            for i in range(p * p, n + 1, p):
-                primes[i] = False
-        p += 1
-    primes[0] = primes[1] = False
-    c = 0
-    for i in range(len(primes)):
-        if primes[i]:
-            c += 1
-        primes[i] = c
-    player1 = 0
-    for n in nums:
-        player1 += primes[n] % 2 == 0
-    if player1 * 2 == len(nums):
+    if x != len(nums):
         return None
-    if player1 * 2 < len(nums):
+    
+    maria = 0
+    ben = 0
+
+    y = [1 for x in range(sorted(nums)[-1] + 1)]
+    y[0], y[1] = 0, 0
+    for i in range(2, len(y)):
+        if y[i] == 1:
+            for j in range(i * i, len(y), i):
+                y[j] = 0
+    for i in nums:
+        if sum(y[:i + 1]) % 2 == 0:
+            ben += 1
+        else:
+            maria += 1
+    if ben > maria:
         return "Ben"
-    return "Maria"
+    if maria > ben:
+        return "Maria"
+return None
